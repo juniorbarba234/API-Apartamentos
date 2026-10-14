@@ -111,4 +111,3 @@ Este repositorio corresponde únicamente a **API Apartamentos**. Biblioteca y Al
 Enlace: https://github.com/juniorbarba234/API-Apartamentos
 
 Documento de descripción y pruebas: [API Apartamentos.pdf](docs/API%20Apartamentos.pdf).
-

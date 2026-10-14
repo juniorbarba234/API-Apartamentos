@@ -1,0 +1,189 @@
+(node:21012) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+newman
+
+API Apartamentos
+
+→ 01 Crear propietario
+  POST http://127.0.0.1:18080/api/clientes [200 OK, 412B, 178ms]
+  √  HTTP 200
+  √  Contraseña oculta
+
+→ 02 Crear cliente
+  POST http://127.0.0.1:18080/api/clientes [200 OK, 399B, 65ms]
+  √  HTTP 200
+
+→ 03 Rechazar correo duplicado
+  POST http://127.0.0.1:18080/api/clientes [409 Conflict, 301B, 75ms]
+  √  HTTP 409
+
+→ 04 Rechazar cliente sin nombre
+  POST http://127.0.0.1:18080/api/clientes [400 Bad Request, 228B, 23ms]
+  √  HTTP 400
+
+→ 05 Crear propiedad
+  POST http://127.0.0.1:18080/api/propiedades [200 OK, 957B, 49ms]
+  √  HTTP 200
+
+→ 06 Consultar propiedades por tipo
+  GET http://127.0.0.1:18080/api/propiedades/tipo/APARTAMENTO [200 OK, 959B, 73ms]
+  √  HTTP 200
+
+→ 07 Consultar propiedades por propietario
+  GET http://127.0.0.1:18080/api/propiedades/propietario/1 [200 OK, 959B, 8ms]
+  √  HTTP 200
+
+→ 08 Crear unidad rentable
+  POST http://127.0.0.1:18080/api/unidades [201 Created, 826B, 17ms]
+  √  HTTP 201
+
+→ 09 Reservar tres noches y calcular total
+  POST http://127.0.0.1:18080/api/reservas [201 Created, 738B, 22ms]
+  √  HTTP 201
+  √  Tres noches cuestan 1500
+
+→ 10 Rechazar reserva duplicada
+  POST http://127.0.0.1:18080/api/reservas [400 Bad Request, 251B, 8ms]
+  √  HTTP 400
+
+→ 11 Rechazar fechas invertidas
+  POST http://127.0.0.1:18080/api/reservas [400 Bad Request, 243B, 7ms]
+  √  HTTP 400
+
+→ 12 Crear pago
+  POST http://127.0.0.1:18080/api/pagos [201 Created, 831B, 17ms]
+  √  HTTP 201
+
+→ 13 Rechazar pago que excede el total
+  POST http://127.0.0.1:18080/api/pagos [400 Bad Request, 260B, 8ms]
+  √  HTTP 400
+
+→ 14 Confirmar pago
+  POST http://127.0.0.1:18080/api/pagos/1/confirmar [200 OK, 833B, 16ms]
+  √  HTTP 200
+  √  Pago confirmado
+
+→ 15 Rechazar segunda confirmación
+  POST http://127.0.0.1:18080/api/pagos/1/confirmar [400 Bad Request, 265B, 5ms]
+  √  HTTP 400
+
+→ 16 Rechazar eliminación de pago confirmado
+  DELETE http://127.0.0.1:18080/api/pagos/1 [400 Bad Request, 254B, 10ms]
+  √  HTTP 400
+
+→ 17 Crear disponibilidad
+  POST http://127.0.0.1:18080/api/disponibilidades [201 Created, 405B, 7ms]
+  √  HTTP 201
+
+→ 18 Registrar reseña
+  POST http://127.0.0.1:18080/api/resenas [201 Created, 772B, 11ms]
+  √  HTTP 201
+
+→ 19 Registrar notificación
+  POST http://127.0.0.1:18080/api/notificaciones [201 Created, 724B, 6ms]
+  √  HTTP 201
+
+→ 20 Registrar imagen
+  POST http://127.0.0.1:18080/api/propiedad-imagenes [201 Created, 657B, 6ms]
+  √  HTTP 201
+
+→ Consultar clientes
+  GET http://127.0.0.1:18080/api/clientes [200 OK, 654B, 12ms]
+  √  HTTP 200
+
+→ Consultar propiedades
+  GET http://127.0.0.1:18080/api/propiedades [200 OK, 959B, 5ms]
+  √  HTTP 200
+
+→ Consultar unidades
+  GET http://127.0.0.1:18080/api/unidades [200 OK, 816B, 5ms]
+  √  HTTP 200
+
+→ Consultar reservas
+  GET http://127.0.0.1:18080/api/reservas [200 OK, 728B, 5ms]
+  √  HTTP 200
+
+→ Consultar pagos
+  GET http://127.0.0.1:18080/api/pagos [200 OK, 828B, 6ms]
+  √  HTTP 200
+
+→ Consultar disponibilidades
+  GET http://127.0.0.1:18080/api/disponibilidades [200 OK, 412B, 5ms]
+  √  HTTP 200
+
+→ Consultar resenas
+  GET http://127.0.0.1:18080/api/resenas [200 OK, 761B, 5ms]
+  √  HTTP 200
+
+→ Consultar notificaciones
+  GET http://127.0.0.1:18080/api/notificaciones [200 OK, 853B, 5ms]
+  √  HTTP 200
+
+→ Consultar propiedad-imagenes
+  GET http://127.0.0.1:18080/api/propiedad-imagenes [200 OK, 793B, 5ms]
+  √  HTTP 200
+
+→ Actualizar unidad
+  PUT http://127.0.0.1:18080/api/unidades/1 [200 OK, 833B, 10ms]
+  √  HTTP 200
+
+→ Actualizar cliente
+  PUT http://127.0.0.1:18080/api/clientes/2 [200 OK, 417B, 66ms]
+  √  HTTP 200
+
+→ Actualizar propiedad
+  PUT http://127.0.0.1:18080/api/propiedades/1 [200 OK, 966B, 8ms]
+  √  HTTP 200
+
+→ Actualizar reserva
+  PUT http://127.0.0.1:18080/api/reservas/1 [200 OK, 758B, 9ms]
+  √  HTTP 200
+
+→ Rechazar edición de pago confirmado
+  PUT http://127.0.0.1:18080/api/pagos/1 [400 Bad Request, 264B, 10ms]
+  √  HTTP 400
+
+→ Reembolsar pago
+  POST http://127.0.0.1:18080/api/pagos/1/reembolsar [200 OK, 851B, 8ms]
+  √  HTTP 200
+  √  Pago reembolsado
+
+→ Rechazar reserva con cliente inexistente
+  POST http://127.0.0.1:18080/api/reservas [400 Bad Request, 231B, 5ms]
+  √  HTTP 400
+
+→ Rechazar reseña fuera de rango
+  POST http://127.0.0.1:18080/api/resenas [400 Bad Request, 241B, 5ms]
+  √  HTTP 400
+
+→ Consultar identificador inexistente
+  GET http://127.0.0.1:18080/api/clientes/9223372036854775806 [404 Not Found, 130B, 4ms]
+  √  HTTP 404
+
+→ Eliminar imagen de prueba
+  DELETE http://127.0.0.1:18080/api/propiedad-imagenes/1 [204 No Content, 112B, 10ms]
+  √  HTTP 204
+
+→ Confirmar eliminación de imagen
+  GET http://127.0.0.1:18080/api/propiedad-imagenes/1 [404 Not Found, 130B, 4ms]
+  √  HTTP 404
+
+┌─────────────────────────┬───────────────────┬──────────────────┐
+│                         │          executed │           failed │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              iterations │                 1 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│                requests │                40 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│            test-scripts │                40 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│      prerequest-scripts │                40 │                0 │
+├─────────────────────────┼───────────────────┼──────────────────┤
+│              assertions │                44 │                0 │
+├─────────────────────────┴───────────────────┴──────────────────┤
+│ total run duration: 4.1s                                       │
+├────────────────────────────────────────────────────────────────┤
+│ total data received: 16.81kB (approx)                          │
+├────────────────────────────────────────────────────────────────┤
+│ average response time: 20ms [min: 4ms, max: 178ms, s.d.: 31ms] │
+└────────────────────────────────────────────────────────────────┘

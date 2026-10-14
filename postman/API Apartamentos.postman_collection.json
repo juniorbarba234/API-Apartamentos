@@ -1,0 +1,1202 @@
+{
+  "info": {
+    "name": "API Apartamentos",
+    "description": "Pruebas reproducibles de los nueve recursos. Crea únicamente datos ficticios. Ejecutar en orden; los identificadores se guardan automáticamente.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8000"
+    },
+    {
+      "key": "runId",
+      "value": ""
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.info.requestName === \"01 Crear propietario\") pm.collectionVariables.set(\"runId\", Date.now().toString());"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "01 Crear propietario",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Luis\",\n  \"apellidos\": \"Prueba\",\n  \"email\": \"propietario.{{runId}}@example.com\",\n  \"password\": \"DemoApartamentos2026!\",\n  \"tipo\": \"PROPIETARIO\",\n  \"telefono\": \"5550000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"propietarioId\", pm.response.json().id);",
+              "pm.test(\"Contraseña oculta\", () => pm.expect(pm.response.json()).not.to.have.property(\"password\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "02 Crear cliente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Prueba\",\n  \"email\": \"ana.{{runId}}@example.com\",\n  \"password\": \"DemoApartamentos2026!\",\n  \"tipo\": \"CLIENTE\",\n  \"telefono\": \"5550000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"clienteId\", pm.response.json().id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "03 Rechazar correo duplicado",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Ana\",\n  \"apellidos\": \"Prueba\",\n  \"email\": \"ana.{{runId}}@example.com\",\n  \"password\": \"DemoApartamentos2026!\",\n  \"tipo\": \"CLIENTE\",\n  \"telefono\": \"5550000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 409\", () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "04 Rechazar cliente sin nombre",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"\",\n  \"apellidos\": \"Prueba\",\n  \"email\": \"ana.{{runId}}@example.com\",\n  \"password\": \"DemoApartamentos2026!\",\n  \"tipo\": \"CLIENTE\",\n  \"telefono\": \"5550000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "05 Crear propiedad",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedades",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"propietario\": {\n    \"id\": \"{{propietarioId}}\"\n  },\n  \"tipo\": \"APARTAMENTO\",\n  \"titulo\": \"Apartamento de prueba\",\n  \"descripcion\": \"Alojamiento para pruebas académicas\",\n  \"direccion\": \"Calle Ejemplo 100\",\n  \"ciudad\": \"Puebla\",\n  \"estadoFederativo\": \"Puebla\",\n  \"codigoPostal\": \"72000\",\n  \"pais\": \"México\",\n  \"precioNoche\": 500,\n  \"capacidad\": 2,\n  \"numHabitaciones\": 1,\n  \"numBanos\": 1,\n  \"metrosCuadrados\": 55,\n  \"estado\": \"DISPONIBLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"propiedadId\", pm.response.json().idPropiedad);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "06 Consultar propiedades por tipo",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedades/tipo/APARTAMENTO"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "07 Consultar propiedades por propietario",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedades/propietario/{{propietarioId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "08 Crear unidad rentable",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/unidades",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"propiedad\": {\n    \"idPropiedad\": \"{{propiedadId}}\"\n  },\n  \"nombre\": \"Unidad A\",\n  \"tipo\": \"APARTAMENTO\",\n  \"capacidad\": 2,\n  \"precioNoche\": 500,\n  \"estado\": \"DISPONIBLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"unidadId\", pm.response.json().idUnidad);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "09 Reservar tres noches y calcular total",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"unidad\": {\n    \"idUnidad\": \"{{unidadId}}\"\n  },\n  \"cliente\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"fechaEntrada\": \"2026-11-01T15:00:00\",\n  \"fechaSalida\": \"2026-11-04T11:00:00\",\n  \"estado\": \"PENDIENTE\",\n  \"importeTotal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"reservaId\", pm.response.json().idReservacion);",
+              "pm.test(\"Tres noches cuestan 1500\", () => pm.expect(pm.response.json().importeTotal).to.eql(1500));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "10 Rechazar reserva duplicada",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"unidad\": {\n    \"idUnidad\": \"{{unidadId}}\"\n  },\n  \"cliente\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"fechaEntrada\": \"2026-11-01T15:00:00\",\n  \"fechaSalida\": \"2026-11-04T11:00:00\",\n  \"estado\": \"PENDIENTE\",\n  \"importeTotal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "11 Rechazar fechas invertidas",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"unidad\": {\n    \"idUnidad\": \"{{unidadId}}\"\n  },\n  \"cliente\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"fechaEntrada\": \"2026-11-01T15:00:00\",\n  \"fechaSalida\": \"2026-10-31T11:00:00\",\n  \"estado\": \"PENDIENTE\",\n  \"importeTotal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "12 Crear pago",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserva\": {\n    \"idReservacion\": \"{{reservaId}}\"\n  },\n  \"importe\": 1500,\n  \"fechaVencimiento\": \"2026-11-01\",\n  \"metodo\": \"TRANSFERENCIA\",\n  \"estado\": \"PENDIENTE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"pagoId\", pm.response.json().idPago);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "13 Rechazar pago que excede el total",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserva\": {\n    \"idReservacion\": \"{{reservaId}}\"\n  },\n  \"importe\": 1,\n  \"fechaVencimiento\": \"2026-11-01\",\n  \"metodo\": \"TRANSFERENCIA\",\n  \"estado\": \"PENDIENTE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "14 Confirmar pago",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos/{{pagoId}}/confirmar"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Pago confirmado\", () => pm.expect(pm.response.json().estado).to.eql(\"PAGADO\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "15 Rechazar segunda confirmación",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos/{{pagoId}}/confirmar"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "16 Rechazar eliminación de pago confirmado",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos/{{pagoId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "17 Crear disponibilidad",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/disponibilidades",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"unidad\": {\n    \"idUnidad\": \"{{unidadId}}\"\n  },\n  \"fechaInicio\": \"2026-12-01T00:00:00\",\n  \"fechaFin\": \"2026-12-10T00:00:00\",\n  \"disponible\": true\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"disponibilidadId\", pm.response.json().idDisponibilidad);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "18 Registrar reseña",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resenas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserva\": {\n    \"idReservacion\": \"{{reservaId}}\"\n  },\n  \"cliente\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"calificacionGeneral\": 5,\n  \"calificacionComunicacion\": 4,\n  \"comentario\": \"Prueba de registro\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"resenaId\", pm.response.json().idResena);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "19 Registrar notificación",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/notificaciones",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"remitente\": {\n    \"id\": \"{{propietarioId}}\"\n  },\n  \"destinatario\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"asunto\": \"Reserva registrada\",\n  \"mensaje\": \"Mensaje de prueba guardado en la base de datos\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"notificacionId\", pm.response.json().idNotificacion);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "20 Registrar imagen",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedad-imagenes",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"propiedad\": {\n    \"idPropiedad\": \"{{propiedadId}}\"\n  },\n  \"url\": \"https://example.com/apartamento.jpg\",\n  \"descripcion\": \"URL de ejemplo\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 201\", () => pm.response.to.have.status(201));",
+              "if (pm.response.code < 300) pm.collectionVariables.set(\"imagenId\", pm.response.json().idImagen);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar clientes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar propiedades",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedades"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar unidades",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/unidades"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar reservas",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservas"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar pagos",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar disponibilidades",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/disponibilidades"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar resenas",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resenas"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar notificaciones",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/notificaciones"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar propiedad-imagenes",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedad-imagenes"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actualizar unidad",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/unidades/{{unidadId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"propiedad\": {\n    \"idPropiedad\": \"{{propiedadId}}\"\n  },\n  \"nombre\": \"Unidad A actualizada\",\n  \"tipo\": \"APARTAMENTO\",\n  \"capacidad\": 2,\n  \"precioNoche\": 500,\n  \"estado\": \"DISPONIBLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actualizar cliente",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes/{{clienteId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"nombres\": \"Ana actualizada\",\n  \"apellidos\": \"Prueba\",\n  \"email\": \"ana.{{runId}}@example.com\",\n  \"password\": \"DemoApartamentos2026!\",\n  \"tipo\": \"CLIENTE\",\n  \"telefono\": \"5550000000\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actualizar propiedad",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedades/{{propiedadId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"propietario\": {\n    \"id\": \"{{propietarioId}}\"\n  },\n  \"tipo\": \"APARTAMENTO\",\n  \"titulo\": \"Apartamento actualizado\",\n  \"descripcion\": \"Alojamiento para pruebas académicas\",\n  \"direccion\": \"Calle Ejemplo 100\",\n  \"ciudad\": \"Puebla\",\n  \"estadoFederativo\": \"Puebla\",\n  \"codigoPostal\": \"72000\",\n  \"pais\": \"México\",\n  \"precioNoche\": 500,\n  \"capacidad\": 2,\n  \"numHabitaciones\": 1,\n  \"numBanos\": 1,\n  \"metrosCuadrados\": 55,\n  \"estado\": \"DISPONIBLE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Actualizar reserva",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservas/{{reservaId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"unidad\": {\n    \"idUnidad\": \"{{unidadId}}\"\n  },\n  \"cliente\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"fechaEntrada\": \"2026-11-01T15:00:00\",\n  \"fechaSalida\": \"2026-11-04T11:00:00\",\n  \"estado\": \"CONFIRMADA\",\n  \"importeTotal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rechazar edición de pago confirmado",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos/{{pagoId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserva\": {\n    \"idReservacion\": \"{{reservaId}}\"\n  },\n  \"importe\": 1500,\n  \"fechaVencimiento\": \"2026-11-01\",\n  \"metodo\": \"TRANSFERENCIA\",\n  \"estado\": \"PENDIENTE\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reembolsar pago",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/pagos/{{pagoId}}/reembolsar"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 200\", () => pm.response.to.have.status(200));",
+              "pm.test(\"Pago reembolsado\", () => pm.expect(pm.response.json().estado).to.eql(\"REEMBOLSADO\"));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rechazar reserva con cliente inexistente",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/reservas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"unidad\": {\n    \"idUnidad\": \"{{unidadId}}\"\n  },\n  \"cliente\": {\n    \"id\": 9223372036854775806\n  },\n  \"fechaEntrada\": \"2026-11-01T15:00:00\",\n  \"fechaSalida\": \"2026-11-04T11:00:00\",\n  \"estado\": \"PENDIENTE\",\n  \"importeTotal\": 1\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Rechazar reseña fuera de rango",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/resenas",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"reserva\": {\n    \"idReservacion\": \"{{reservaId}}\"\n  },\n  \"cliente\": {\n    \"id\": \"{{clienteId}}\"\n  },\n  \"calificacionGeneral\": 6,\n  \"calificacionComunicacion\": 4\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 400\", () => pm.response.to.have.status(400));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Consultar identificador inexistente",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/clientes/9223372036854775806"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Eliminar imagen de prueba",
+      "request": {
+        "method": "DELETE",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedad-imagenes/{{imagenId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 204\", () => pm.response.to.have.status(204));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Confirmar eliminación de imagen",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/api/propiedad-imagenes/{{imagenId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test(\"HTTP 404\", () => pm.response.to.have.status(404));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}

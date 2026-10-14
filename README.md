@@ -109,3 +109,6 @@ Los pagos representan registros y cambios de estado; no procesan dinero mediante
 Este repositorio corresponde únicamente a **API Apartamentos**. Biblioteca y Alquila YA se entregan mediante sus propios repositorios.
 
 Enlace: https://github.com/juniorbarba234/API-Apartamentos
+
+Documento de descripción y pruebas: [API Apartamentos.pdf](docs/API%20Apartamentos.pdf).
+

@@ -4,34 +4,6 @@ API REST para administrar apartamentos y sus unidades de alojamiento. Permite re
 
 Proyecto académico de Arquitectura orientada a servicios. Se desarrolló a partir de la base de Apartamentos proporcionada para la actividad.
 
-Si es tu primera vez ejecutando una API, comienza con [EMPEZAR.md](EMPEZAR.md). Puedes abrir `CONFIGURAR.cmd` para escribir la conexión de MySQL y `EJECUTAR.cmd` para iniciar el proyecto con doble clic.
-
-## Tecnologías
-
-- Java 21 o superior
-- Spring Boot 4.1.1
-- Spring Data JPA y Hibernate
-- MySQL
-- Maven Wrapper
-- Thymeleaf para las pantallas incluidas en la base
-- JUnit y Mockito para pruebas automáticas
-- Postman y Newman para pruebas HTTP
-
-## Ejecutar con MySQL
-
-1. Iniciar MySQL en el puerto 3306.
-2. Copiar `application-local.example.properties` como `application-local.properties` en la carpeta del proyecto, junto a `pom.xml`.
-3. Escribir el usuario y la contraseña reales de MySQL en ese archivo. El archivo está excluido de Git.
-4. Ejecutar desde PowerShell:
-
-```powershell
-.\mvnw.cmd spring-boot:run
-```
-
-El usuario de MySQL debe poder crear la base `api_apartamentos`, o la base debe existir previamente. Hibernate crea y actualiza las tablas. La API utiliza `http://localhost:8000/api` y las pantallas se abren en `http://localhost:8000`.
-
-También se pueden configurar las variables `DB_HOST`, `DB_PORT`, `DB_NAME`, `DB_USERNAME`, `DB_PASSWORD` y `SERVER_PORT`. La configuración general está en `src/main/resources/application.properties`.
-
 ## Recursos de la API
 
 Cada recurso tiene GET para listar, GET `/{id}` para consultar, POST para crear, PUT `/{id}` para actualizar y DELETE `/{id}` para eliminar. Los identificadores los genera la base de datos.
@@ -78,36 +50,8 @@ Las contraseñas se guardan con BCrypt y se excluyen de las respuestas JSON. Se 
 3. Verificar que `baseUrl` tenga el valor `http://localhost:8000`.
 4. Ejecutar la colección en orden con **Run collection**. Los identificadores se guardan automáticamente para las siguientes solicitudes.
 
-La colección crea datos ficticios con correos distintos en cada ejecución. Contiene 40 solicitudes y 44 comprobaciones: registros de los nueve recursos, consultas, actualizaciones, eliminación, reservas duplicadas, fechas inválidas, correos duplicados y operaciones de pago.
-
-Para ejecutarla con Newman:
-
-```powershell
-npx newman run "postman/API Apartamentos.postman_collection.json"
-```
-
-Las evidencias de la ejecución están en `docs/pruebas`. Se ejecutó la colección con Newman contra H2 en memoria en el puerto 18080: 40 solicitudes y 44 comprobaciones aprobadas. H2 se utilizó solamente como entorno de prueba; la configuración de ejecución habitual utiliza MySQL. La conexión local con MySQL requiere completar `application-local.properties`.
-
-## Pruebas automáticas
-
-```powershell
-.\mvnw.cmd test
-```
-
-Las ocho pruebas verifican el inicio de la aplicación, el cálculo de reservas, el rechazo de solapamientos, las unidades con propiedades inexistentes o en mantenimiento, los importes de pagos y las transiciones inválidas. Utilizan H2 y repositorios simulados, sin necesitar la contraseña local de MySQL.
+La colección crea datos ficticios con correos distintos en cada ejecución. Contiene 40 solicitudes: registros de los nueve recursos, consultas, actualizaciones, eliminación, reservas duplicadas, fechas inválidas, correos duplicados y operaciones de pago.
 
 ## Organización del código
 
 `models` contiene las entidades y sus relaciones. `repositories` realiza las consultas a la base. `services` aplica las reglas de negocio. `controllers` recibe las solicitudes y devuelve respuestas. `resources/templates` contiene las pantallas de la base.
-
-## Alcance académico
-
-Los pagos representan registros y cambios de estado; no procesan dinero mediante un banco. Las notificaciones se guardan en la base, sin enviar correos. La disponibilidad y el precio especial se administran como registros independientes; las reservas utilizan el precio habitual de la unidad. No se ha implementado autenticación ni autorización de usuarios. Las pruebas cubren solicitudes secuenciales; no certifican reservas y pagos simultáneos.
-
-## Repositorio de esta actividad
-
-Este repositorio corresponde únicamente a **API Apartamentos**. Biblioteca y Alquila YA se entregan mediante sus propios repositorios.
-
-Enlace: https://github.com/juniorbarba234/API-Apartamentos
-
-Documento de descripción y pruebas: [API Apartamentos.pdf](docs/API%20Apartamentos.pdf).
